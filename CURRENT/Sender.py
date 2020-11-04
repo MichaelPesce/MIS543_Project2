@@ -56,7 +56,7 @@ class Sender(BasicSender.BasicSender):
             # 3. duplication
             # 4. delay
             # add new functions as necessary
-            response = self.receive(.3)
+            response = self.receive(.5)
             sendIt = True
             while(sendIt):
                 while(response == None):
@@ -64,20 +64,18 @@ class Sender(BasicSender.BasicSender):
                     self.send(packet.encode())
                     print("sent: %s" % seqno)
                     count+=1
-                    response = self.receive(.3)
+                    response = self.receive(.5)
                 resp_str = response.decode()
                 ackNo = response.decode().split('|')[1]
-
                 if self.handle_response(resp_str):
                     if(self.checkAckNo(seqno,ackNo)):
                         print("ack is correct")
                         sendIt = False
                     else:
-                        print("ack is wrong")
-                        response = None
+                        print("ack is wrong. increase timeout for next response")
+                        response = self.receive(4)
                 else: 
-                    response = None
-                
+                    response = self.receive(.5)
             ##### your code ends here ... #####
 
             msg = next_msg
